@@ -152,6 +152,7 @@ export function PrintLogForm() {
                 <FormControl>
                   <Input
                     type="time"
+                    step="600"
                     value={field.value ? format(new Date(field.value), "HH:mm") : ''}
                     onChange={(e) => {
                       const date = field.value ? new Date(field.value) : new Date();
@@ -207,6 +208,7 @@ export function PrintLogForm() {
                 <FormControl>
                   <Input
                     type="time"
+                    step="600"
                     value={field.value ? format(new Date(field.value), "HH:mm") : ''}
                     onChange={(e) => {
                       const date = field.value ? new Date(field.value) : new Date();
