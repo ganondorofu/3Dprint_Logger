@@ -15,7 +15,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { format } from 'date-fns';
+import { format, parseISO, isValid } from 'date-fns';
 import { ja } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 
@@ -54,14 +54,24 @@ export function PrintLogForm() {
     });
   };
 
-  const handleDateTimeChange = (field: any, date: Date | undefined, time: string) => {
+  const handleDateTimeChange = (field: any, date: Date | undefined, time: string | undefined) => {
+    const currentValue = field.value ? parseISO(field.value) : new Date();
+    let newDateTime = isValid(currentValue) ? new Date(currentValue) : new Date();
+  
     if (date) {
-      const [hours, minutes] = time.split(':').map(Number);
-      const newDateTime = new Date(date);
-      newDateTime.setHours(hours);
-      newDateTime.setMinutes(minutes);
-      field.onChange(newDateTime.toISOString().slice(0, 16));
+      newDateTime.setFullYear(date.getFullYear(), date.getMonth(), date.getDate());
     }
+  
+    if (time) {
+      const [hours, minutes] = time.split(':').map(Number);
+      if (!isNaN(hours) && !isNaN(minutes)) {
+        newDateTime.setHours(hours);
+        newDateTime.setMinutes(minutes);
+      }
+    }
+    
+    // Zod と react-hook-form が期待するISO 8601形式の文字列に変換
+    field.onChange(newDateTime.toISOString().slice(0, 16));
   };
 
   return (
@@ -142,7 +152,7 @@ export function PrintLogForm() {
                       mode="single"
                       selected={field.value ? new Date(field.value) : undefined}
                       onSelect={(date) => {
-                        const time = field.value ? format(new Date(field.value), "HH:mm") : '00:00';
+                        const time = field.value ? format(new Date(field.value), "HH:mm") : undefined;
                         handleDateTimeChange(field, date, time);
                       }}
                       initialFocus
@@ -198,7 +208,7 @@ export function PrintLogForm() {
                       mode="single"
                       selected={field.value ? new Date(field.value) : undefined}
                       onSelect={(date) => {
-                        const time = field.value ? format(new Date(field.value), "HH:mm") : '00:00';
+                        const time = field.value ? format(new Date(field.value), "HH:mm") : undefined;
                         handleDateTimeChange(field, date, time);
                       }}
                       initialFocus

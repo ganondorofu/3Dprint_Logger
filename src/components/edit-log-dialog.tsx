@@ -15,7 +15,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { format, parse } from 'date-fns';
+import { format, parseISO, isValid } from 'date-fns';
 import { ja } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -61,22 +61,25 @@ export function EditLogDialog({ isOpen, onOpenChange, log }: EditLogDialogProps)
     });
   };
 
-  const handleDateTimeChange = (field: any, date: Date | undefined, time: string) => {
+  const handleDateTimeChange = (field: any, date: Date | undefined, time: string | undefined) => {
+    const currentValue = field.value ? parseISO(field.value) : new Date();
+    let newDateTime = isValid(currentValue) ? new Date(currentValue) : new Date();
+
     if (date) {
-      const originalDate = parse(field.value, "yyyy-MM-dd'T'HH:mm", new Date());
+      newDateTime.setFullYear(date.getFullYear(), date.getMonth(), date.getDate());
+    }
+
+    if (time) {
       const [hours, minutes] = time.split(':').map(Number);
-      const newDateTime = new Date(date);
-      if(!isNaN(hours) && !isNaN(minutes)) {
+      if (!isNaN(hours) && !isNaN(minutes)) {
         newDateTime.setHours(hours);
         newDateTime.setMinutes(minutes);
-      } else if (originalDate instanceof Date && !isNaN(originalDate.getTime())) {
-        newDateTime.setHours(originalDate.getHours());
-        newDateTime.setMinutes(originalDate.getMinutes());
       }
-      
-      field.onChange(format(newDateTime, "yyyy-MM-dd'T'HH:mm"));
     }
+    
+    field.onChange(format(newDateTime, "yyyy-MM-dd'T'HH:mm"));
   };
+
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -161,7 +164,7 @@ export function EditLogDialog({ isOpen, onOpenChange, log }: EditLogDialogProps)
                           mode="single"
                           selected={field.value ? new Date(field.value) : undefined}
                           onSelect={(date) => {
-                            const time = field.value ? format(new Date(field.value), "HH:mm") : '00:00';
+                            const time = field.value ? format(new Date(field.value), "HH:mm") : undefined;
                             handleDateTimeChange(field, date, time);
                           }}
                           initialFocus
@@ -217,7 +220,7 @@ export function EditLogDialog({ isOpen, onOpenChange, log }: EditLogDialogProps)
                           mode="single"
                           selected={field.value ? new Date(field.value) : undefined}
                           onSelect={(date) => {
-                            const time = field.value ? format(new Date(field.value), "HH:mm") : '00:00';
+                            const time = field.value ? format(new Date(field.value), "HH:mm") : undefined;
                             handleDateTimeChange(field, date, time);
                           }}
                           initialFocus
