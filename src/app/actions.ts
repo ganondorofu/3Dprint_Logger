@@ -10,7 +10,7 @@ export async function addPrintLog(data: LogSchema) {
   const validatedFields = logSchema.safeParse(data);
 
   if (!validatedFields.success) {
-    return { success: false, error: 'Invalid data provided.' };
+    return { success: false, error: '無効なデータです。' };
   }
 
   try {
@@ -23,20 +23,14 @@ export async function addPrintLog(data: LogSchema) {
     });
 
     revalidatePath('/');
-    return { success: true, message: 'Log added successfully.' };
+    return { success: true, message: 'ログが正常に追加されました。' };
   } catch (error) {
-    return { success: false, error: 'Failed to add log to the database.' };
+    return { success: false, error: 'データベースへのログの追加に失敗しました。' };
   }
 }
 
 export async function getPrintLogs(): Promise<{ logs: PrintLog[] | null; error: string | null; }> {
   try {
-    // A check to ensure a project ID is configured before querying
-    if (!process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID && !db.app.options.projectId?.includes("your-project-id")) {
-       console.warn("Firebase project ID is not configured. Skipping Firestore query.");
-       return { logs: [], error: "Firebase is not configured. Please check your setup." };
-    }
-
     const q = query(collection(db, 'printLogs'), orderBy('startTime', 'desc'));
     const querySnapshot = await getDocs(q);
     const logs = querySnapshot.docs.map(doc => ({
@@ -45,7 +39,7 @@ export async function getPrintLogs(): Promise<{ logs: PrintLog[] | null; error: 
     })) as PrintLog[];
     return { logs, error: null };
   } catch (error) {
-    console.error("Error fetching print logs:", error);
-    return { logs: null, error: 'Failed to fetch print logs from the database.' };
+    console.error("プリントログの取得中にエラーが発生しました:", error);
+    return { logs: null, error: 'データベースからのプリントログの取得に失敗しました。' };
   }
 }
