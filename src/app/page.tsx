@@ -3,9 +3,17 @@ import { PrintLogForm } from '@/components/print-log-form';
 import { PrintLogTable } from '@/components/print-log-table';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Printer, ScrollText } from 'lucide-react';
+import { PrintLogSerializable } from '@/lib/types';
 
 export default async function Home() {
   const { logs, error } = await getPrintLogs();
+
+  const serializableLogs: PrintLogSerializable[] = logs ? logs.map(log => ({
+    ...log,
+    startTime: log.startTime.toDate().toISOString(),
+    endTime: log.endTime.toDate().toISOString(),
+    createdAt: log.createdAt.toDate().toISOString(),
+  })) : [];
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
@@ -35,7 +43,7 @@ export default async function Home() {
             </CardHeader>
             <CardContent>
               {error && <p className="text-destructive">{error}</p>}
-              <PrintLogTable logs={logs ?? []} />
+              <PrintLogTable logs={serializableLogs} />
             </CardContent>
           </Card>
         </div>

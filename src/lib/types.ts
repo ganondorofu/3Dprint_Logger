@@ -12,6 +12,13 @@ export interface PrintLog {
   createdAt: Timestamp;
 }
 
+export interface PrintLogSerializable extends Omit<PrintLog, 'startTime' | 'endTime' | 'createdAt'> {
+  startTime: string;
+  endTime: string;
+  createdAt: string;
+}
+
+
 export const logSchema = z.object({
   purpose: z.string().min(3, { message: '目的は3文字以上で入力してください。' }).max(500),
   printer: z.enum(['left', 'right'], { required_error: 'プリンターを選択してください。' }),
@@ -25,3 +32,7 @@ export const logSchema = z.object({
 });
 
 export type LogSchema = z.infer<typeof logSchema>;
+
+export const updateLogSchema = logSchema;
+
+export type UpdateLogSchema = z.infer<typeof updateLogSchema>;

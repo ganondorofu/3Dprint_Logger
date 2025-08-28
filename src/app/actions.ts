@@ -1,10 +1,10 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { addDoc, collection, getDocs, orderBy, query, Timestamp } from 'firebase/firestore';
+import { addDoc, collection, getDocs, orderBy, query, Timestamp, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import type { PrintLog, LogSchema } from '@/lib/types';
-import { logSchema } from '@/lib/types';
+import type { PrintLog, LogSchema, UpdateLogSchema } from '@/lib/types';
+import { logSchema, updateLogSchema } from '@/lib/types';
 
 export async function addPrintLog(data: LogSchema) {
   const validatedFields = logSchema.safeParse(data);
@@ -41,5 +41,37 @@ export async function getPrintLogs(): Promise<{ logs: PrintLog[] | null; error: 
   } catch (error) {
     console.error("プリントログの取得中にエラーが発生しました:", error);
     return { logs: null, error: 'データベースからのプリントログの取得に失敗しました。' };
+  }
+}
+
+export async function deletePrintLog(id: string) {
+  try {
+    await deleteDoc(doc(db, 'printLogs', id));
+    revalidatePath('/');
+    return { success: true, message: 'ログが正常に削除されました。' };
+  } catch (error) {
+    return { success: false, error: 'ログの削除に失敗しました。' };
+  }
+}
+
+export async function updatePrintLog(id: string, data: UpdateLogSchema) {
+  const validatedFields = updateLogSchema.safeParse(data);
+
+  if (!validatedFields.success) {
+    return { success: false, error: '無効なデータです。' };
+  }
+  
+  try {
+    const { startTime, endTime, ...rest } = validatedFields.data;
+    const logRef = doc(db, 'printLogs', id);
+    await updateDoc(logRef, {
+        ...rest,
+        startTime: Timestamp.fromDate(new Date(startTime)),
+        endTime: Timestamp.fromDate(new Date(endTime)),
+    });
+    revalidatePath('/');
+    return { success: true, message: 'ログが正常に更新されました。' };
+  } catch (error) {
+    return { success: false, error: 'ログの更新に失敗しました。' };
   }
 }
