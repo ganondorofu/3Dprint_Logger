@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { format } from 'date-fns';
+import { formatInTimeZone } from 'date-fns-tz';
 import { ja } from 'date-fns/locale';
 import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 import { deletePrintLog } from '@/app/actions';
@@ -50,11 +50,14 @@ export function PrintLogTable({ logs }: PrintLogTableProps) {
 
   useEffect(() => {
     setFormattedLogs(
-      logs.map((log) => ({
-        ...log,
-        startTime: format(new Date(log.startTime), 'yyyy/MM/dd HH:mm', { locale: ja }),
-        endTime: format(new Date(log.endTime), 'yyyy/MM/dd HH:mm', { locale: ja }),
-      }))
+      logs.map((log) => {
+        const timeZone = 'Asia/Tokyo';
+        return {
+          ...log,
+          startTime: formatInTimeZone(new Date(log.startTime), timeZone, 'yyyy/MM/dd HH:mm', { locale: ja }),
+          endTime: formatInTimeZone(new Date(log.endTime), timeZone, 'yyyy/MM/dd HH:mm', { locale: ja }),
+        }
+      })
     );
   }, [logs]);
 
