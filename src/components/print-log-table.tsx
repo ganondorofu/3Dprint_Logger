@@ -1,4 +1,5 @@
 import { format } from 'date-fns';
+import { ja } from 'date-fns/locale';
 import type { PrintLog } from '@/lib/types';
 import {
   Table,
@@ -25,7 +26,7 @@ export function PrintLogTable({ logs }: PrintLogTableProps) {
   }
 
   const formatDate = (timestamp: { toDate: () => Date }) => {
-    return format(timestamp.toDate(), 'MM/dd HH:mm');
+    return format(timestamp.toDate(), 'yyyy/MM/dd HH:mm', { locale: ja });
   };
 
   return (
@@ -35,8 +36,8 @@ export function PrintLogTable({ logs }: PrintLogTableProps) {
           <TableRow>
             <TableHead>目的</TableHead>
             <TableHead className="hidden sm:table-cell">プリンター</TableHead>
-            <TableHead className="hidden md:table-cell">開始時間</TableHead>
-            <TableHead className="hidden md:table-cell">終了時間</TableHead>
+            <TableHead className="hidden md:table-cell">開始日時</TableHead>
+            <TableHead className="hidden md:table-cell">終了日時</TableHead>
             <TableHead>利用者</TableHead>
           </TableRow>
         </TableHeader>

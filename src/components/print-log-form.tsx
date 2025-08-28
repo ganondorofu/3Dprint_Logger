@@ -3,15 +3,20 @@
 import { useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2 } from 'lucide-react';
+import { CalendarIcon, Loader2 } from 'lucide-react';
 import { addPrintLog } from '@/app/actions';
 import { logSchema, type LogSchema } from '@/lib/types';
 import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { format } from 'date-fns';
+import { ja } from 'date-fns/locale';
+import { cn } from '@/lib/utils';
 
 export function PrintLogForm() {
   const [isPending, startTransition] = useTransition();
@@ -46,6 +51,16 @@ export function PrintLogForm() {
         });
       }
     });
+  };
+
+  const handleDateTimeChange = (field: any, date: Date | undefined, time: string) => {
+    if (date) {
+      const [hours, minutes] = time.split(':').map(Number);
+      const newDateTime = new Date(date);
+      newDateTime.setHours(hours);
+      newDateTime.setMinutes(minutes);
+      field.onChange(newDateTime.toISOString().slice(0, 16));
+    }
   };
 
   return (
@@ -94,34 +109,117 @@ export function PrintLogForm() {
             </FormItem>
           )}
         />
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <FormField
-            control={form.control}
-            name="startTime"
-            render={({ field }) => (
-                <FormItem>
-                <FormLabel>開始時間</FormLabel>
+        
+        <FormField
+          control={form.control}
+          name="startTime"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>開始日時</FormLabel>
+              <div className="grid grid-cols-2 gap-2">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "pl-3 text-left font-normal",
+                          !field.value && "text-muted-foreground"
+                        )}
+                      >
+                        {field.value ? (
+                          format(new Date(field.value), "yyyy/MM/dd")
+                        ) : (
+                          <span>日付を選択</span>
+                        )}
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value ? new Date(field.value) : undefined}
+                      onSelect={(date) => {
+                        const time = field.value ? format(new Date(field.value), "HH:mm") : '00:00';
+                        handleDateTimeChange(field, date, time);
+                      }}
+                      initialFocus
+                      locale={ja}
+                    />
+                  </PopoverContent>
+                </Popover>
                 <FormControl>
-                    <Input type="datetime-local" {...field} />
+                  <Input
+                    type="time"
+                    value={field.value ? format(new Date(field.value), "HH:mm") : ''}
+                    onChange={(e) => {
+                      const date = field.value ? new Date(field.value) : new Date();
+                      handleDateTimeChange(field, date, e.target.value);
+                    }}
+                  />
                 </FormControl>
-                <FormMessage />
-                </FormItem>
-            )}
-            />
-            <FormField
-            control={form.control}
-            name="endTime"
-            render={({ field }) => (
-                <FormItem>
-                <FormLabel>終了時間</FormLabel>
+              </div>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="endTime"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>終了日時</FormLabel>
+              <div className="grid grid-cols-2 gap-2">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "pl-3 text-left font-normal",
+                          !field.value && "text-muted-foreground"
+                        )}
+                      >
+                        {field.value ? (
+                          format(new Date(field.value), "yyyy/MM/dd")
+                        ) : (
+                          <span>日付を選択</span>
+                        )}
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value ? new Date(field.value) : undefined}
+                      onSelect={(date) => {
+                        const time = field.value ? format(new Date(field.value), "HH:mm") : '00:00';
+                        handleDateTimeChange(field, date, time);
+                      }}
+                      initialFocus
+                      locale={ja}
+                    />
+                  </PopoverContent>
+                </Popover>
                 <FormControl>
-                    <Input type="datetime-local" {...field} />
+                  <Input
+                    type="time"
+                    value={field.value ? format(new Date(field.value), "HH:mm") : ''}
+                    onChange={(e) => {
+                      const date = field.value ? new Date(field.value) : new Date();
+                      handleDateTimeChange(field, date, e.target.value);
+                    }}
+                  />
                 </FormControl>
-                <FormMessage />
-                </FormItem>
-            )}
-            />
-        </div>
+              </div>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <FormField
           control={form.control}
           name="studentId"
