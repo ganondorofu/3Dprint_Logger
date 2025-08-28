@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CalendarIcon, Loader2 } from 'lucide-react';
 import { updatePrintLog } from '@/app/actions';
-import { logSchema, type LogSchema, type PrintLogSerializable } from '@/lib/types';
+import { updateLogSchema, type LogSchema, type PrintLogSerializable } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -31,7 +31,7 @@ export function EditLogDialog({ isOpen, onOpenChange, log }: EditLogDialogProps)
   const { toast } = useToast();
 
   const form = useForm<LogSchema>({
-    resolver: zodResolver(logSchema),
+    resolver: zodResolver(updateLogSchema),
     defaultValues: {
       purpose: log.purpose,
       printer: log.printer,
