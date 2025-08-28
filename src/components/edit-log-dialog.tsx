@@ -62,18 +62,20 @@ export function EditLogDialog({ isOpen, onOpenChange, log }: EditLogDialogProps)
   };
 
   const handleDateTimeChange = (field: any, date: Date | undefined, time: string | undefined) => {
-    const currentValue = field.value ? parseISO(field.value) : new Date();
-    let newDateTime = isValid(currentValue) ? new Date(currentValue) : new Date();
+    const currentValue = field.value ? parseISO(field.value) : new Date(0);
+    const newDateTime = isValid(currentValue) ? new Date(currentValue) : new Date(0);
 
     if (date) {
+      const currentHours = newDateTime.getHours();
+      const currentMinutes = newDateTime.getMinutes();
       newDateTime.setFullYear(date.getFullYear(), date.getMonth(), date.getDate());
+      newDateTime.setHours(currentHours, currentMinutes, 0, 0);
     }
 
     if (time) {
       const [hours, minutes] = time.split(':').map(Number);
       if (!isNaN(hours) && !isNaN(minutes)) {
-        newDateTime.setHours(hours);
-        newDateTime.setMinutes(minutes);
+        newDateTime.setHours(hours, minutes, 0, 0);
       }
     }
     
@@ -178,7 +180,7 @@ export function EditLogDialog({ isOpen, onOpenChange, log }: EditLogDialogProps)
                         step="600"
                         value={field.value ? format(new Date(field.value), "HH:mm") : ''}
                         onChange={(e) => {
-                          const date = field.value ? new Date(field.value) : new Date();
+                          const date = field.value ? new Date(field.value) : undefined;
                           handleDateTimeChange(field, date, e.target.value);
                         }}
                       />
@@ -234,7 +236,7 @@ export function EditLogDialog({ isOpen, onOpenChange, log }: EditLogDialogProps)
                         step="600"
                         value={field.value ? format(new Date(field.value), "HH:mm") : ''}
                         onChange={(e) => {
-                          const date = field.value ? new Date(field.value) : new Date();
+                          const date = field.value ? new Date(field.value) : undefined;
                           handleDateTimeChange(field, date, e.target.value);
                         }}
                       />
