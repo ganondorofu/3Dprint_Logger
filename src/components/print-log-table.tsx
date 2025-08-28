@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
 import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
@@ -45,7 +45,18 @@ export function PrintLogTable({ logs }: PrintLogTableProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedLog, setSelectedLog] = useState<PrintLogSerializable | null>(null);
+  const [formattedLogs, setFormattedLogs] = useState(logs);
   const { toast } = useToast();
+
+  useEffect(() => {
+    setFormattedLogs(
+      logs.map((log) => ({
+        ...log,
+        startTime: format(new Date(log.startTime), 'yyyy/MM/dd HH:mm', { locale: ja }),
+        endTime: format(new Date(log.endTime), 'yyyy/MM/dd HH:mm', { locale: ja }),
+      }))
+    );
+  }, [logs]);
 
   if (!logs.length) {
     return (
@@ -55,10 +66,6 @@ export function PrintLogTable({ logs }: PrintLogTableProps) {
       </div>
     );
   }
-
-  const formatDate = (dateString: string) => {
-    return format(new Date(dateString), 'yyyy/MM/dd HH:mm', { locale: ja });
-  };
   
   const handleDelete = async () => {
     if (!selectedLog) return;
@@ -105,7 +112,7 @@ export function PrintLogTable({ logs }: PrintLogTableProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {logs.map((log) => (
+            {formattedLogs.map((log) => (
               <TableRow key={log.id}>
                 <TableCell className="font-medium max-w-[200px] truncate">{log.purpose}</TableCell>
                 <TableCell className="hidden sm:table-cell">
@@ -113,8 +120,8 @@ export function PrintLogTable({ logs }: PrintLogTableProps) {
                     {log.printer === 'left' ? '左' : '右'}
                   </Badge>
                 </TableCell>
-                <TableCell className="hidden md:table-cell">{formatDate(log.startTime)}</TableCell>
-                <TableCell className="hidden md:table-cell">{formatDate(log.endTime)}</TableCell>
+                <TableCell className="hidden md:table-cell">{log.startTime}</TableCell>
+                <TableCell className="hidden md:table-cell">{log.endTime}</TableCell>
                 <TableCell>
                   <div className="font-medium">{log.userName}</div>
                   <div className="text-xs text-muted-foreground">{log.studentId}</div>
@@ -162,7 +169,12 @@ export function PrintLogTable({ logs }: PrintLogTableProps) {
       {selectedLog && (
         <EditLogDialog
             isOpen={isEditDialogOpen}
-            onOpenChange={setIsEditDialogOpen}
+            onOpenChange={(isOpen) => {
+              setIsEditDialogOpen(isOpen);
+              if (!isOpen) {
+                setSelectedLog(null);
+              }
+            }}
             log={selectedLog}
         />
       )}

@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CalendarIcon, Loader2 } from 'lucide-react';
 import { updatePrintLog } from '@/app/actions';
-import { updateLogSchema, type LogSchema, type PrintLogSerializable } from '@/lib/types';
+import { updateLogSchema, type UpdateLogSchema, type PrintLogSerializable } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -15,7 +15,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { format } from 'date-fns';
+import { format, parse } from 'date-fns';
 import { ja } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -30,7 +30,7 @@ export function EditLogDialog({ isOpen, onOpenChange, log }: EditLogDialogProps)
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
 
-  const form = useForm<LogSchema>({
+  const form = useForm<UpdateLogSchema>({
     resolver: zodResolver(updateLogSchema),
     defaultValues: {
       purpose: log.purpose,
@@ -42,7 +42,7 @@ export function EditLogDialog({ isOpen, onOpenChange, log }: EditLogDialogProps)
     },
   });
 
-  const onSubmit = (data: LogSchema) => {
+  const onSubmit = (data: UpdateLogSchema) => {
     startTransition(async () => {
       const result = await updatePrintLog(log.id, data);
       if (result.success) {
@@ -63,11 +63,18 @@ export function EditLogDialog({ isOpen, onOpenChange, log }: EditLogDialogProps)
 
   const handleDateTimeChange = (field: any, date: Date | undefined, time: string) => {
     if (date) {
+      const originalDate = parse(field.value, "yyyy-MM-dd'T'HH:mm", new Date());
       const [hours, minutes] = time.split(':').map(Number);
       const newDateTime = new Date(date);
-      newDateTime.setHours(hours);
-      newDateTime.setMinutes(minutes);
-      field.onChange(newDateTime.toISOString().slice(0, 16));
+      if(!isNaN(hours) && !isNaN(minutes)) {
+        newDateTime.setHours(hours);
+        newDateTime.setMinutes(minutes);
+      } else if (originalDate instanceof Date && !isNaN(originalDate.getTime())) {
+        newDateTime.setHours(originalDate.getHours());
+        newDateTime.setMinutes(originalDate.getMinutes());
+      }
+      
+      field.onChange(format(newDateTime, "yyyy-MM-dd'T'HH:mm"));
     }
   };
 
