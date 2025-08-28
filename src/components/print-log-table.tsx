@@ -18,8 +18,8 @@ export function PrintLogTable({ logs }: PrintLogTableProps) {
   if (!logs.length) {
     return (
       <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">
-        <h3 className="text-lg font-semibold">No Logs Found</h3>
-        <p className="text-sm text-muted-foreground">Add a new log to see usage history here.</p>
+        <h3 className="text-lg font-semibold">ログが見つかりません</h3>
+        <p className="text-sm text-muted-foreground">新しいログを追加して、利用履歴をここに表示します。</p>
       </div>
     );
   }
@@ -33,11 +33,11 @@ export function PrintLogTable({ logs }: PrintLogTableProps) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Purpose</TableHead>
-            <TableHead className="hidden sm:table-cell">Printer</TableHead>
-            <TableHead className="hidden md:table-cell">Start Time</TableHead>
-            <TableHead className="hidden md:table-cell">End Time</TableHead>
-            <TableHead>User</TableHead>
+            <TableHead>目的</TableHead>
+            <TableHead className="hidden sm:table-cell">プリンター</TableHead>
+            <TableHead className="hidden md:table-cell">開始時間</TableHead>
+            <TableHead className="hidden md:table-cell">終了時間</TableHead>
+            <TableHead>利用者</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -46,7 +46,7 @@ export function PrintLogTable({ logs }: PrintLogTableProps) {
               <TableCell className="font-medium max-w-[200px] truncate">{log.purpose}</TableCell>
               <TableCell className="hidden sm:table-cell">
                 <Badge variant={log.printer === 'left' ? 'secondary' : 'outline'}>
-                  {log.printer.charAt(0).toUpperCase() + log.printer.slice(1)}
+                  {log.printer === 'left' ? '左' : '右'}
                 </Badge>
               </TableCell>
               <TableCell className="hidden md:table-cell">{formatDate(log.startTime)}</TableCell>

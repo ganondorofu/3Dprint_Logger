@@ -34,14 +34,14 @@ export function PrintLogForm() {
       const result = await addPrintLog(data);
       if (result.success) {
         toast({
-          title: 'Success!',
+          title: '成功しました！',
           description: result.message,
         });
         form.reset();
       } else {
         toast({
           variant: 'destructive',
-          title: 'Uh oh! Something went wrong.',
+          title: '問題が発生しました。',
           description: result.error,
         });
       }
@@ -56,9 +56,9 @@ export function PrintLogForm() {
           name="purpose"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Purpose</FormLabel>
+              <FormLabel>目的</FormLabel>
               <FormControl>
-                <Textarea placeholder="e.g., Prototype for final project" {...field} />
+                <Textarea placeholder="例：最終プロジェクトのプロトタイプ" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -69,7 +69,7 @@ export function PrintLogForm() {
           name="printer"
           render={({ field }) => (
             <FormItem className="space-y-3">
-              <FormLabel>Printer</FormLabel>
+              <FormLabel>プリンター</FormLabel>
               <FormControl>
                 <RadioGroup
                   onValueChange={field.onChange}
@@ -80,13 +80,13 @@ export function PrintLogForm() {
                     <FormControl>
                       <RadioGroupItem value="left" />
                     </FormControl>
-                    <FormLabel className="font-normal">Left</FormLabel>
+                    <FormLabel className="font-normal">左</FormLabel>
                   </FormItem>
                   <FormItem className="flex items-center space-x-2 space-y-0">
                     <FormControl>
                       <RadioGroupItem value="right" />
                     </FormControl>
-                    <FormLabel className="font-normal">Right</FormLabel>
+                    <FormLabel className="font-normal">右</FormLabel>
                   </FormItem>
                 </RadioGroup>
               </FormControl>
@@ -100,7 +100,7 @@ export function PrintLogForm() {
             name="startTime"
             render={({ field }) => (
                 <FormItem>
-                <FormLabel>Start Time</FormLabel>
+                <FormLabel>開始時間</FormLabel>
                 <FormControl>
                     <Input type="datetime-local" {...field} />
                 </FormControl>
@@ -113,7 +113,7 @@ export function PrintLogForm() {
             name="endTime"
             render={({ field }) => (
                 <FormItem>
-                <FormLabel>End Time</FormLabel>
+                <FormLabel>終了時間</FormLabel>
                 <FormControl>
                     <Input type="datetime-local" {...field} />
                 </FormControl>
@@ -127,9 +127,9 @@ export function PrintLogForm() {
           name="studentId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Student ID</FormLabel>
+              <FormLabel>学籍番号</FormLabel>
               <FormControl>
-                <Input placeholder="e.g., 123456" {...field} />
+                <Input placeholder="例：123456" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -140,9 +140,9 @@ export function PrintLogForm() {
           name="userName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>User Name</FormLabel>
+              <FormLabel>利用者名</FormLabel>
               <FormControl>
-                <Input placeholder="e.g., John Doe" {...field} />
+                <Input placeholder="例：山田太郎" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -150,7 +150,7 @@ export function PrintLogForm() {
         />
         <Button type="submit" disabled={isPending} className="w-full">
           {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Submit Log
+          ログを送信
         </Button>
       </form>
     </Form>

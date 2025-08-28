@@ -19,8 +19,8 @@ export default async function Home() {
         <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
           <Card className="lg:col-span-1" >
             <CardHeader>
-              <CardTitle>Add New Log</CardTitle>
-              <CardDescription>Record a new 3D printer usage session.</CardDescription>
+              <CardTitle>新しいログを追加</CardTitle>
+              <CardDescription>新しい3Dプリンターの利用セッションを記録します。</CardDescription>
             </CardHeader>
             <CardContent>
               <PrintLogForm />
@@ -30,7 +30,7 @@ export default async function Home() {
             <CardHeader>
                 <div className="flex items-center gap-2">
                     <ScrollText className="h-5 w-5" />
-                    <CardTitle>Usage History</CardTitle>
+                    <CardTitle>利用履歴</CardTitle>
                 </div>
             </CardHeader>
             <CardContent>
